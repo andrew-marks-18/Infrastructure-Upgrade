@@ -136,6 +136,12 @@ This module is a reusable module for deploying an application service.
 | aws_region | The AWS region to deploy resources in. | `string` | n/a |
 | secrets_arn | A list of maps, each containing 'name' and 'valueFrom' for secrets. | `list(object({ name = string, valueFrom = string }))` | `[]` |
 
+#### Outputs
+
+| Name | Description |
+|------|-------------|
+| load_balancer_dns | The DNS name of the Load Balancer. |
+
 ## Root Variables and Outputs
 
 ### Inputs
