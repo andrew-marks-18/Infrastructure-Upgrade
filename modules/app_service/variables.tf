@@ -44,6 +44,12 @@ variable "ecs_task_execution_role_arn" {
   type        = string
 }
 
+variable "task_role_arn" {
+  description = "The ARN of the ECS task role."
+  type        = string
+  default     = null
+}
+
 variable "container_image" {
   description = "The container image to deploy."
   type        = string
@@ -105,4 +111,10 @@ variable "certificate_arn" {
 variable "aws_region" {
   description = "The AWS region to deploy resources in."
   type        = string
+}
+
+variable "secrets_arn" {
+  description = "A list of maps, each containing 'name' and 'valueFrom' for secrets."
+  type        = list(object({ name = string, valueFrom = string }))
+  default     = []
 }

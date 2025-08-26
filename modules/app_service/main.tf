@@ -47,14 +47,21 @@ resource "aws_cloudwatch_log_group" "main" {
 resource "aws_ecs_task_definition" "main" {
   family                   = "${var.prefix}-${var.service_name}"
   network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
+  requires_compatibilities = ["Fargate"]
   cpu                      = var.container_cpu
   memory                   = var.container_memory
   execution_role_arn       = var.ecs_task_execution_role_arn
+  task_role_arn            = var.task_role_arn
   container_definitions = jsonencode([{
     name  = "${var.prefix}-${var.service_name}-container"
     image = var.container_image
     portMappings = [{ containerPort = var.container_port }]
+    secrets = var.secrets_arn != null ? [
+      for s in var.secrets_arn : {
+        name      = s.name
+        valueFrom = s.valueFrom
+      }
+    ] : null
     logConfiguration = {
       logDriver = "awslogs"
       options = {

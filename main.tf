@@ -31,7 +31,7 @@ variable "ui_container_image" {
 variable "api_container_image" {
   description = "The API container image to deploy (e.g., from ECR)."
   type        = string
-  default     = "nginx:1.27.0"
+  default     = "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-api:latest"
 }
 
 variable "domain_name" {
@@ -66,6 +66,19 @@ data "aws_acm_certificate" "wildcard" {
   most_recent = true
 }
 
+# --- SECRETS ---
+resource "aws_secretsmanager_secret" "api_secrets" {
+  name = "${local.prefix}-api-secrets"
+}
+
+resource "aws_secretsmanager_secret_version" "api_secrets" {
+  secret_id     = aws_secretsmanager_secret.api_secrets.id
+  secret_string = jsonencode({
+    ApiKey      = "your-api-key-here"
+    DbPassword  = "your-db-password-here"
+  })
+}
+
 # --- NETWORKING ---
 module "networking" {
   source = "./modules/networking"
@@ -76,6 +89,7 @@ module "networking" {
 module "ecs_cluster" {
   source = "./modules/ecs_cluster"
   prefix = local.prefix
+  aws_region = var.aws_region
 }
 
 # --- UI WORKFLOW RESOURCES ---
@@ -90,6 +104,7 @@ module "ui_service" {
   cluster_id              = module.ecs_cluster.cluster_id
   cluster_name            = module.ecs_cluster.cluster_name
   ecs_task_execution_role_arn = module.ecs_cluster.ecs_task_execution_role_arn
+  task_role_arn           = module.ecs_cluster.ecs_task_role_arn
   container_image         = var.ui_container_image
   health_check_path       = "/"
   certificate_arn         = data.aws_acm_certificate.wildcard.arn
@@ -108,13 +123,21 @@ module "api_service" {
   cluster_id              = module.ecs_cluster.cluster_id
   cluster_name            = module.ecs_cluster.cluster_name
   ecs_task_execution_role_arn = module.ecs_cluster.ecs_task_execution_role_arn
+  task_role_arn           = module.ecs_cluster.ecs_task_role_arn
   container_image         = var.api_container_image
+  container_port          = 8080
   health_check_path       = "/health"
   certificate_arn         = data.aws_acm_certificate.wildcard.arn
   aws_region              = var.aws_region
   min_capacity            = 2
   max_capacity            = 6
   scaling_target_value    = 60
+  secrets_arn = [
+    {
+      name      = "API_SECRETS" # This will be the environment variable name in the container
+      valueFrom = aws_secretsmanager_secret_version.api_secrets.arn
+    }
+  ]
 }
 
 # --- OUTPUTS ---
