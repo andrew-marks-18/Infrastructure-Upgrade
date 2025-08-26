@@ -94,6 +94,7 @@ This module creates the ECS cluster and IAM roles.
 | Name | Description | Type | Default |
 |------|-------------|:----:|:-------:|
 | prefix | The prefix to use for all resources. | `string` | n/a |
+| aws_region | The AWS region. | `string` | n/a |
 
 #### Outputs
 
@@ -102,6 +103,7 @@ This module creates the ECS cluster and IAM roles.
 | cluster_id | The ID of the ECS cluster. |
 | cluster_name | The name of the ECS cluster. |
 | ecs_task_execution_role_arn | The ARN of the ECS task execution role. |
+| ecs_task_role_arn | The ARN of the ECS task role. |
 
 ### app_service
 
@@ -120,6 +122,7 @@ This module is a reusable module for deploying an application service.
 | cluster_id | The ID of the ECS cluster. | `string` | n/a |
 | cluster_name | The name of the ECS cluster. | `string` | n/a |
 | ecs_task_execution_role_arn | The ARN of the ECS task execution role. | `string` | n/a |
+| task_role_arn | The ARN of the ECS task role. | `string` | `null` |
 | container_image | The container image to deploy. | `string` | n/a |
 | container_port | The port the container listens on. | `number` | `80` |
 | container_cpu | The CPU units to allocate to the container. | `number` | `256` |
@@ -131,12 +134,7 @@ This module is a reusable module for deploying an application service.
 | health_check_path | The path for the health check. | `string` | `/` |
 | certificate_arn | The ARN of the ACM certificate. | `string` | n/a |
 | aws_region | The AWS region to deploy resources in. | `string` | n/a |
-
-#### Outputs
-
-| Name | Description |
-|------|-------------|
-| load_balancer_dns | The DNS name of the Load Balancer. |
+| secrets_arn | A list of maps, each containing 'name' and 'valueFrom' for secrets. | `list(object({ name = string, valueFrom = string }))` | `[]` |
 
 ## Root Variables and Outputs
 
@@ -146,7 +144,7 @@ This module is a reusable module for deploying an application service.
 |------|-------------|:----:|:-------:|
 | aws_region | The AWS region to deploy resources in. | `string` | `us-east-1` |
 | ui_container_image | The UI container image to deploy (e.g., from ECR). | `string` | `nginx:1.27.0` |
-| api_container_image | The API container image to deploy (e.g., from ECR). | `string` | `nginx:1.27.0` |
+| api_container_image | The API container image to deploy (e.g., from ECR). | `string` | `123456789012.dkr.ecr.us-east-1.amazonaws.com/my-api:latest` |
 | domain_name | The root domain name for your application (e.g., example.com). | `string` | `customdonations.com` |
 | ui_subdomain | The subdomain for the UI service (e.g., upgrade-ui). | `string` | `upgrade-ui` |
 | api_subdomain | The subdomain for the API service (e.g., upgrade-api). | `string` | `upgrade-api` |
