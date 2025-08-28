@@ -15,42 +15,7 @@ provider "aws" {
   }
 }
 
-# --- VARIABLES ---
-variable "aws_region" {
-  description = "The AWS region to deploy resources in."
-  type        = string
-  default     = "us-east-1"
-}
 
-variable "ui_container_image" {
-  description = "The UI container image to deploy (e.g., from ECR)."
-  type        = string
-  default     = "nginx:1.27.0"
-}
-
-variable "api_container_image" {
-  description = "The API container image to deploy (e.g., from ECR)."
-  type        = string
-  default     = "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-api:latest"
-}
-
-variable "domain_name" {
-  description = "The root domain name for your application (e.g., example.com)."
-  type        = string
-  default     = "customdonations.com"
-}
-
-variable "ui_subdomain" {
-  description = "The subdomain for the UI service (e.g., upgrade-ui)."
-  type        = string
-  default     = "upgrade-ui"
-}
-
-variable "api_subdomain" {
-  description = "The subdomain for the API service (e.g., upgrade-api)."
-  type        = string
-  default     = "upgrade-api"
-}
 
 # --- LOCALS ---
 locals {
@@ -67,17 +32,11 @@ data "aws_acm_certificate" "wildcard" {
 }
 
 # --- SECRETS ---
-resource "aws_secretsmanager_secret" "api_secrets" {
-  name = "${local.prefix}-api-secrets"
+data "aws_secretsmanager_secret" "app_credentials" {
+  name = "${local.prefix}-app-secrets"
 }
 
-resource "aws_secretsmanager_secret_version" "api_secrets" {
-  secret_id     = aws_secretsmanager_secret.api_secrets.id
-  secret_string = jsonencode({
-    ApiKey      = "your-api-key-here"
-    DbPassword  = "your-db-password-here"
-  })
-}
+
 
 # --- NETWORKING ---
 module "networking" {
@@ -112,6 +71,12 @@ module "ui_service" {
   min_capacity            = 2
   max_capacity            = 6
   scaling_target_value    = 60
+  secrets_arn = [
+    {
+      name      = "APP_SECRETS" # This will be the environment variable name in the container
+      valueFrom = data.aws_secretsmanager_secret.app_credentials.arn
+    }
+  ]
 }
 
 # --- API WORKFLOW RESOURCES ---
@@ -137,8 +102,8 @@ module "api_service" {
   scaling_target_value    = 60
   secrets_arn = [
     {
-      name      = "API_SECRETS" # This will be the environment variable name in the container
-      valueFrom = aws_secretsmanager_secret_version.api_secrets.arn
+      name      = "APP_SECRETS" # This will be the environment variable name in the container
+      valueFrom = data.aws_secretsmanager_secret.app_credentials.arn
     }
   ]
 }

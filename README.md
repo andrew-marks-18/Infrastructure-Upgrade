@@ -42,19 +42,25 @@ The Terraform code is organized into the following modules:
 
     Update the `backend.tf` file with the names of your S3 bucket and DynamoDB table.
 
-3.  **Initialize Terraform:**
+3.  **Secret Management:**
+
+    This configuration expects an existing secret in AWS Secrets Manager named `upgrade-app-secrets`. This secret should be a JSON string containing all necessary key-value pairs (e.g., API keys, database passwords).
+
+    The content of this secret will be injected into both the UI and API service containers as the environment variable `APP_SECRETS`.
+
+4.  **Initialize Terraform:**
 
     ```sh
     terraform init
     ```
 
-4.  **Review the plan:**
+5.  **Review the plan:**
 
     ```sh
     terraform plan
     ```
 
-5.  **Apply the changes:**
+6.  **Apply the changes:**
 
     ```sh
     terraform apply
