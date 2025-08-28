@@ -125,7 +125,7 @@ module "api_service" {
   ecs_task_execution_role_arn = module.ecs_cluster.ecs_task_execution_role_arn
   task_role_arn           = module.ecs_cluster.ecs_task_role_arn
   container_image         = var.api_container_image
-  container_port          = 8080
+  container_port          = 80
   health_check_path       = "/health"
   certificate_arn         = data.aws_acm_certificate.wildcard.arn
   aws_region              = var.aws_region

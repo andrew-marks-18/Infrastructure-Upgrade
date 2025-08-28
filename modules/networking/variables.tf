@@ -22,8 +22,4 @@ variable "availability_zones" {
   default     = ["us-east-1a", "us-east-1b"]
 }
 
-variable "container_port" {
-  description = "The port the container listens on."
-  type        = number
-  default     = 80
-}
+

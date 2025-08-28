@@ -82,8 +82,8 @@ resource "aws_security_group" "fargate" {
 
   ingress {
     protocol        = "tcp"
-    from_port       = var.container_port
-    to_port         = var.container_port
+    from_port       = 80
+    to_port         = 80
     security_groups = [aws_security_group.alb.id]
   }
 
