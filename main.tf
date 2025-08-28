@@ -109,6 +109,9 @@ module "ui_service" {
   health_check_path       = "/"
   certificate_arn         = data.aws_acm_certificate.wildcard.arn
   aws_region              = var.aws_region
+  min_capacity            = 2
+  max_capacity            = 6
+  scaling_target_value    = 60
 }
 
 # --- API WORKFLOW RESOURCES ---
