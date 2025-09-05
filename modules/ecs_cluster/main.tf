@@ -46,7 +46,7 @@ resource "aws_iam_role_policy" "ecs_task_role_secrets_policy" {
           "secretsmanager:GetSecretValue",
         ],
         Effect   = "Allow",
-        Resource = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.prefix}-api-secrets-*",
+        Resource = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.prefix}-app-secrets-*",
       },
     ],
   })
