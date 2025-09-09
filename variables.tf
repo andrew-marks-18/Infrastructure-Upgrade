@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "The AWS region to deploy resources in."
   type        = string
-  default     = "us-east-1"
+  default     = "us-east-2"
 }
 
 variable "ui_container_image" {
@@ -13,7 +13,7 @@ variable "ui_container_image" {
 variable "api_container_image" {
   description = "The API container image to deploy (e.g., from ECR)."
   type        = string
-  default     = "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-api:latest"
+  default     = "123456789012.dkr.ecr.us-east-2.amazonaws.com/my-api:latest"
 }
 
 variable "domain_name" {

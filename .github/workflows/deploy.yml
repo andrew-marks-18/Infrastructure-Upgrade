@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  AWS_REGION: us-east-1 # Default AWS region, can be overridden
+  AWS_REGION: us-east-2 # Default AWS region, can be overridden
 
 jobs:
   plan:
