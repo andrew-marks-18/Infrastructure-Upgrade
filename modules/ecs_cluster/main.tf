@@ -12,14 +12,43 @@ resource "aws_iam_role" "ecs_task_execution_role" {
     Statement = [{
       Action    = "sts:AssumeRole",
       Effect    = "Allow",
-      Principal = { Service = "ecs-tasks.amazonaws.com" }
+      Principal = { Service = "ecs-tasks.amazonaws.com" },
+      Condition = {
+        StringEquals = { "aws:RequestedRegion": "us-east-2" }
+      }
     }]
   })
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_attachment" {
   role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  policy_arn = aws_iam_policy.ecs_task_execution_custom_policy.arn
+}
+
+resource "aws_iam_policy" "ecs_task_execution_custom_policy" {
+  name        = "${var.prefix}-ecs-task-execution-custom-policy"
+  description = "Custom policy for ECS task execution role restricted to us-east-2"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource  = "*",
+        Condition = {
+          StringEquals = { "aws:RequestedRegion": "us-east-2" }
+        }
+      },
+    ],
+  })
 }
 
 resource "aws_iam_role" "ecs_task_role" {
@@ -29,7 +58,10 @@ resource "aws_iam_role" "ecs_task_role" {
     Statement = [{
       Action    = "sts:AssumeRole",
       Effect    = "Allow",
-      Principal = { Service = "ecs-tasks.amazonaws.com" }
+      Principal = { Service = "ecs-tasks.amazonaws.com" },
+      Condition = {
+        StringEquals = { "aws:RequestedRegion": "us-east-2" }
+      }
     }]
   })
 }
@@ -45,8 +77,11 @@ resource "aws_iam_role_policy" "ecs_task_role_secrets_policy" {
         Action = [
           "secretsmanager:GetSecretValue",
         ],
-        Effect   = "Allow",
-        Resource = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.prefix}-app-secrets-*",
+        Effect    = "Allow",
+        Resource  = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.prefix}-app-secrets-*",
+        Condition = {
+          StringEquals = { "aws:RequestedRegion": "us-east-2" }
+        }
       },
     ],
   })
