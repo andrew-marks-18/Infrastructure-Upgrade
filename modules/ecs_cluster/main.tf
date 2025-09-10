@@ -14,7 +14,7 @@ resource "aws_iam_role" "ecs_task_execution_role" {
       Effect    = "Allow",
       Principal = { Service = "ecs-tasks.amazonaws.com" },
       Condition = {
-        StringEquals = { "aws:RequestedRegion": "us-east-2" }
+        StringEquals = { "aws:RequestedRegion": "${var.aws_region}" }
       }
     }]
   })
@@ -27,7 +27,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_attachment" {
 
 resource "aws_iam_policy" "ecs_task_execution_custom_policy" {
   name        = "${var.prefix}-ecs-task-execution-custom-policy"
-  description = "Custom policy for ECS task execution role restricted to us-east-2"
+  description = "Custom policy for ECS task execution role restricted to ${var.aws_region}"
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -44,7 +44,7 @@ resource "aws_iam_policy" "ecs_task_execution_custom_policy" {
         ],
         Resource  = "*",
         Condition = {
-          StringEquals = { "aws:RequestedRegion": "us-east-2" }
+          StringEquals = { "aws:RequestedRegion": "${var.aws_region}" }
         }
       },
     ],
@@ -60,7 +60,7 @@ resource "aws_iam_role" "ecs_task_role" {
       Effect    = "Allow",
       Principal = { Service = "ecs-tasks.amazonaws.com" },
       Condition = {
-        StringEquals = { "aws:RequestedRegion": "us-east-2" }
+        StringEquals = { "aws:RequestedRegion": "${var.aws_region}" }
       }
     }]
   })
@@ -80,7 +80,7 @@ resource "aws_iam_role_policy" "ecs_task_role_secrets_policy" {
         Effect    = "Allow",
         Resource  = "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:${var.prefix}-app-secrets-*",
         Condition = {
-          StringEquals = { "aws:RequestedRegion": "us-east-2" }
+          StringEquals = { "aws:RequestedRegion": "${var.aws_region}" }
         }
       },
     ],
