@@ -44,7 +44,7 @@ For manual deployments or testing, you can follow these steps:
 
 2.  **Configure the backend:**
 
-    Update the `backend.tf` file with the names of your S3 bucket and DynamoDB table.
+    The `backend.tf` file is pre-configured with default S3 bucket (`upgrade-terraform-state-us-east-2`) and DynamoDB table (`upgrade-terraform-state-lock`) names for Terraform state management. You may update these values if you wish to use a different backend.
 
 3.  **Application Secret Management (AWS Secrets Manager):**
 
@@ -109,7 +109,7 @@ This module creates the networking resources for the application.
 | prefix | The prefix to use for all resources. | `string` | n/a |
 | vpc_cidr_block | The CIDR block for the VPC. | `string` | `10.0.0.0/16` |
 | public_subnet_cidr_blocks | The CIDR blocks for the public subnets. | `list(string)` | `["10.0.1.0/24", "10.0.2.0/24"]` |
-| availability_zones | The availability zones to use for the subnets. | `list(string)` | `["us-east-1a", "us-east-1b"]` |
+| availability_zones | The availability zones to use for the subnets. | `list(string)` | `["${var.aws_region}a", "${var.aws_region}b"]` |
 
 #### Outputs
 
@@ -185,9 +185,9 @@ This module is a reusable module for deploying an application service.
 
 | Name | Description | Type | Default |
 |------|-------------|:----:|:-------:|
-| aws_region | The AWS region to deploy resources in. | `string` | `us-east-1` |
+| aws_region | The AWS region to deploy resources in. | `string` | `us-east-2` |
 | ui_container_image | The UI container image to deploy (e.g., from ECR). | `string` | `nginx:1.27.0` |
-| api_container_image | The API container image to deploy (e.g., from ECR). | `string` | `123456789012.dkr.ecr.us-east-1.amazonaws.com/my-api:latest` |
+| api_container_image | The API container image to deploy (e.g., from ECR). | `string` | `nginx:1.27.0` |
 | domain_name | The root domain name for your application (e.g., example.com). | `string` | `customdonations.com` |
 | ui_subdomain | The subdomain for the UI service (e.g., upgrade-ui). | `string` | `upgrade-ui` |
 | api_subdomain | The subdomain for the API service (e.g., upgrade-api). | `string` | `upgrade-api` |
