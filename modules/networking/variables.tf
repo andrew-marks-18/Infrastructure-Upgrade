@@ -24,6 +24,7 @@ variable "aws_region" {
 variable "availability_zones" {
   description = "The availability zones to use for the subnets."
   type        = list(string)
+  default     = ["${var.aws_region}a", "${var.aws_region}b"]
 }
 
 
