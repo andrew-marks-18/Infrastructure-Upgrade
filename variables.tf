@@ -13,7 +13,7 @@ variable "ui_container_image" {
 variable "api_container_image" {
   description = "The API container image to deploy (e.g., from ECR)."
   type        = string
-  default     = "123456789012.dkr.ecr.us-east-2.amazonaws.com/my-api:latest"
+  default     = "123456789012.dkr.ecr.${var.aws_region}.amazonaws.com/my-api:latest"
 }
 
 variable "domain_name" {

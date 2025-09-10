@@ -16,10 +16,14 @@ variable "public_subnet_cidr_blocks" {
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
+variable "aws_region" {
+  description = "The AWS region."
+  type        = string
+}
+
 variable "availability_zones" {
   description = "The availability zones to use for the subnets."
   type        = list(string)
-  default     = ["us-east-2a", "us-east-2b"]
 }
 
 

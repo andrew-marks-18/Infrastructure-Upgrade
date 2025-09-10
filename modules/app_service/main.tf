@@ -53,8 +53,8 @@ resource "aws_ecs_task_definition" "main" {
   execution_role_arn       = var.ecs_task_execution_role_arn
   task_role_arn            = var.task_role_arn
   container_definitions = jsonencode([{
-    name  = "${var.prefix}-${var.service_name}-container"
-    image = var.container_image
+    name         = "${var.prefix}-${var.service_name}-container"
+    image        = var.container_image
     portMappings = [{ containerPort = var.container_port }]
     secrets = var.secrets_arn != null ? [
       for s in var.secrets_arn : {
